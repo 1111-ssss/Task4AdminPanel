@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Data\Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ardalis.Result" Version="10.1.0" />
+    <PackageReference Include="Ardalis.Result.AspNetCore" Version="10.1.0" />
+    <PackageReference Include="Ardalis.Result.FluentValidation" Version="10.1.0" />
+    <PackageReference Include="FluentValidation" Version="8.3.0" />
+  </ItemGroup>
+
+</Project>
