@@ -9,7 +9,7 @@ namespace Web.Extensions;
 
 public static class ServiceConfigurationExtension
 {
-    public static IServiceCollection AddServiceConfiguration(this IServiceCollection services)
+    public static IServiceCollection AddServiceConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddLogging();
 
@@ -22,6 +22,15 @@ public static class ServiceConfigurationExtension
 
         // Validators
         services.AddValidatorsFromAssembly(typeof(AssemblyMarker).Assembly);
+
+        services
+            .AddFluentEmail(configuration["Email:From"])
+            .AddSmtpSender(
+                configuration["Email:SmtpServer"],
+                int.Parse(configuration["Email:Port"] ?? "587"),
+                configuration["Email:From"],
+                configuration["Email:Password"]
+            );
 
         return services;
     }

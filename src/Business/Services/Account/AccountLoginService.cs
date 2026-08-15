@@ -1,6 +1,7 @@
 using Ardalis.Result;
 using Business.Contracts.Account;
 using Business.Interfaces.Account;
+using Data.Enums;
 using Data.Interfaces.Repositories;
 using Data.Interfaces.Services;
 using FluentValidation;
@@ -12,18 +13,21 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly IEmailSenderService _emailSenderService;
     private readonly IValidator<LoginUserRequest> _loginUserValidator;
     private readonly ILogger<AccountLoginService> _logger;
 
     public AccountLoginService(
         IUserRepository userRepository,
         IPasswordHasher passwordHasher,
+        IEmailSenderService emailSenderService,
         IValidator<LoginUserRequest> loginUserValidator,
         ILogger<AccountLoginService> logger
     )
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
+        _emailSenderService = emailSenderService;
         _loginUserValidator = loginUserValidator;
         _logger = logger;
     }
@@ -34,6 +38,18 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
         if (user is null)
         {
             return Result.NotFound("User with this email does not exist");
+        }
+
+        if (user.Status == UserStatus.Unverified && (user.EmailConfirmationExpiration is null || user.EmailConfirmationExpiration < DateTime.UtcNow))
+        {
+            await _emailSenderService.SendConfirmationEmail(user.Email);
+
+            return Result.Conflict("Email is not confirmed");
+        }
+
+        if (user.Status == UserStatus.Blocked)
+        {
+            return Result.Conflict("User is blocked");
         }
 
         var validationResult = await Validate(_loginUserValidator, request);

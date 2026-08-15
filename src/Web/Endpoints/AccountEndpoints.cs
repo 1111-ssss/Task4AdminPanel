@@ -22,7 +22,7 @@ public static class AccountEndpoints
 
     private static async Task<IResult> Register(
         [FromServices] IAccountRegisterService accountRegisterService,
-        [FromServices] IAuthCookieService authCookieService,
+        [FromServices] IEmailSenderService emailSenderService,
         RegisterUserRequest request,
         CancellationToken cancellationToken
     )
@@ -31,14 +31,7 @@ public static class AccountEndpoints
 
         if (result.IsSuccess)
         {
-            var user = result.Value;
-            await authCookieService.SignIn(
-                email: user.Email,
-                name: user.Name,
-                surname: user.Surname,
-                status: user.Status,
-                rememberMe: request.RememberMe
-            );
+            await emailSenderService.SendConfirmationEmail(result.Value.Email);
         }
 
         return result.ToMinimalApiResult();
@@ -79,12 +72,25 @@ public static class AccountEndpoints
     }
 
     private static async Task<IResult> ConfirmEmail(
-        [FromServices] IAccountConfirmEmailService accountConfirmEmailService,
+        [FromServices] IConfirmEmailService accountConfirmEmailService,
         [FromServices] IAuthCookieService authCookieService,
         ConfirmEmailRequest request,
         CancellationToken cancellationToken
     )
     {
-        
+        var result = await accountConfirmEmailService.ConfirmEmail(request);
+
+        if (result.IsSuccess)
+        {
+            await authCookieService.SignIn(
+                email: result.Value.Email,
+                name: result.Value.Name,
+                surname: result.Value.Surname,
+                status: result.Value.Status,
+                rememberMe: false
+            );
+        }
+
+        return result.ToMinimalApiResult();
     }
 }
