@@ -40,11 +40,18 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
             return Result.NotFound("User with this email does not exist");
         }
 
-        if (user.Status == UserStatus.Unverified && (user.EmailConfirmationExpiration is null || user.EmailConfirmationExpiration < DateTime.UtcNow))
+        if (user.Status == UserStatus.Unverified)
         {
-            await _emailSenderService.SendConfirmationEmail(user.Email);
+            if (user.EmailConfirmationExpiration is null || user.EmailConfirmationExpiration < DateTime.UtcNow)
+            {
+                await _emailSenderService.SendConfirmationEmail(user.Email);
 
-            return Result.Conflict("Email is not confirmed");
+                return Result.Conflict("Email is not confirmed");
+            }
+            else
+            {
+                return Result.Conflict("Email confirmation token already sent and is still valid");
+            }
         }
 
         if (user.Status == UserStatus.Blocked)
@@ -60,7 +67,7 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
 
         if (!_passwordHasher.VerifyPassword(request.Password, user.PasswordHash))
         {
-            return Result.Unauthorized("Invalid password");
+            return Result.Unauthorized("Invalid credentials");
         }
 
         try
