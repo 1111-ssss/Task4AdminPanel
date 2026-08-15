@@ -1,4 +1,3 @@
-using Data.Enums;
 using Business.Contracts.Account;
 using Business.Interfaces.Account;
 using Microsoft.AspNetCore.Mvc;
