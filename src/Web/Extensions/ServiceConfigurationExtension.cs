@@ -17,6 +17,7 @@ public static class ServiceConfigurationExtension
 
         // Services
         services.AddScoped<IAccountRegisterService, AccountRegisterService>();
+        services.AddScoped<IAccountLoginService, AccountLoginService>();
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 
         // Validators
