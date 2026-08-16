@@ -13,7 +13,7 @@ public class LoginUserValidator : AbstractValidator<LoginUserRequest>
             .MaximumLength(256);
         RuleFor(x => x.Password)
             .NotEmpty()
-            .MinimumLength(8)
+            .MinimumLength(1)
             .MaximumLength(128);
     }
 }
