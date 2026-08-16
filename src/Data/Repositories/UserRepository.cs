@@ -1,5 +1,6 @@
 using Data.Database;
 using Data.Entities;
+using Data.Enums;
 using Data.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,6 +51,14 @@ public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
             .ToListAsync(cancellationToken);
 
         return (users, totalCount);
+    }
+
+    public async Task<UserStatus?> GetUserStatusByEmail(string email, CancellationToken cancellationToken = default)
+    {
+        var user = await _dbSet
+            .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+
+        return user?.Status;
     }
 
     private IQueryable<ApplicationUser> ApplyUserSorting(IQueryable<ApplicationUser> query, string orderBy, bool isAsc)

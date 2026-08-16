@@ -14,6 +14,9 @@ public static class AdminEndpoints
         group.MapGet("/users", ListUsers)
             .RequireAuthorization();
 
+        group.MapDelete("/users/{email}", DeleteUser)
+            .RequireAuthorization();
+
         return group;
     }
 
@@ -24,6 +27,17 @@ public static class AdminEndpoints
     )
     {
         var result = await listUsersService.ListUsers(request);
+
+        return result.ToMinimalApiResult();
+    }
+
+    private static async Task<IResult> DeleteUser(
+        [FromServices] IDeleteUserService deleteUserService,
+        [FromRoute] string email,
+        CancellationToken cancellationToken
+    )
+    {
+        var result = await deleteUserService.DeleteUser(new DeleteUserRequest(email));
 
         return result.ToMinimalApiResult();
     }
