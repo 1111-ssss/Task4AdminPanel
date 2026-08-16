@@ -9,7 +9,7 @@ builder.Services.AddAuthConfiguration();
 builder.Services.AddDatabaseConfiguration(builder.Configuration);
 
 // Services, Logging, RazorPages
-builder.Services.AddServiceConfiguration();
+builder.Services.AddServiceConfiguration(builder.Configuration);
 
 var app = builder.Build();
 
