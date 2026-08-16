@@ -15,9 +15,13 @@ public static class ServiceConfigurationExtension
 
         services.AddRazorPages();
 
-        // Services
+        // Business Services
         services.AddScoped<IAccountRegisterService, AccountRegisterService>();
         services.AddScoped<IAccountLoginService, AccountLoginService>();
+        services.AddScoped<IConfirmEmailService, ConfirmEmailService>();
+        services.AddScoped<IEmailSenderService, EmailSenderService>();
+
+        // Data Services
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 
         // Validators
