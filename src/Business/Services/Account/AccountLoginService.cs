@@ -32,7 +32,7 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
         _logger = logger;
     }
 
-    public async Task<Result<UserResponse>> Login(LoginUserRequest request)
+    public async Task<Result<UserResponse>> Login(LoginUserRequest request, Func<string> getLink)
     {
         var user = await _userRepository.GetByEmail(request.Email);
         if (user is null)
@@ -44,7 +44,7 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
         {
             if (user.EmailConfirmationExpiration is null || user.EmailConfirmationExpiration < DateTime.UtcNow)
             {
-                await _emailSenderService.SendConfirmationEmail(user.Email);
+                await _emailSenderService.SendConfirmationEmail(user.Email, getLink());
 
                 return Result.Conflict("Email is not confirmed");
             }

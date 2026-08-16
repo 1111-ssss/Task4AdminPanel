@@ -24,6 +24,7 @@ public static class AccountEndpoints
         [FromServices] IAccountRegisterService accountRegisterService,
         [FromServices] IEmailSenderService emailSenderService,
         RegisterUserRequest request,
+        HttpRequest httpRequest,
         CancellationToken cancellationToken
     )
     {
@@ -31,7 +32,7 @@ public static class AccountEndpoints
 
         if (result.IsSuccess)
         {
-            await emailSenderService.SendConfirmationEmail(result.Value.Email);
+            await emailSenderService.SendConfirmationEmail(result.Value.Email, GetConfirmationLink(httpRequest));
         }
 
         return result.ToMinimalApiResult();
@@ -41,10 +42,13 @@ public static class AccountEndpoints
         [FromServices] IAccountLoginService accountLoginService,
         [FromServices] IAuthCookieService authCookieService,
         LoginUserRequest request,
+        HttpRequest httpRequest,
         CancellationToken cancellationToken
     )
     {
-        var result = await accountLoginService.Login(request);
+        Func<string> getLink = () => GetConfirmationLink(httpRequest);
+
+        var result = await accountLoginService.Login(request, getLink);
 
         if (result.IsSuccess)
         {
@@ -74,11 +78,11 @@ public static class AccountEndpoints
     private static async Task<IResult> ConfirmEmail(
         [FromServices] IConfirmEmailService accountConfirmEmailService,
         [FromServices] IAuthCookieService authCookieService,
-        ConfirmEmailRequest request,
+        [FromQuery] string token,
         CancellationToken cancellationToken
     )
     {
-        var result = await accountConfirmEmailService.ConfirmEmail(request);
+        var result = await accountConfirmEmailService.ConfirmEmail(new ConfirmEmailRequest(token));
 
         if (result.IsSuccess)
         {
@@ -92,5 +96,10 @@ public static class AccountEndpoints
         }
 
         return result.ToMinimalApiResult();
+    }
+
+    private static string GetConfirmationLink(HttpRequest httpRequest)
+    {
+        return $"{httpRequest.Scheme}://{httpRequest.Host}/Account/ConfirmEmail?token=";
     }
 }

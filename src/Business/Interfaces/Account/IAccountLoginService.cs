@@ -5,5 +5,5 @@ namespace Business.Interfaces.Account;
 
 public interface IAccountLoginService
 {
-    Task<Result<UserResponse>> Login(LoginUserRequest request);
+    Task<Result<UserResponse>> Login(LoginUserRequest request, Func<string> getLink);
 }
