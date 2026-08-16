@@ -100,6 +100,6 @@ public static class AccountEndpoints
 
     private static string GetConfirmationLink(HttpRequest httpRequest)
     {
-        return $"{httpRequest.Scheme}://{httpRequest.Host}/Account/ConfirmEmail?token=";
+        return $"{httpRequest.Scheme}://{httpRequest.Host}/api/account/confirm-email?token=";
     }
 }
