@@ -14,4 +14,10 @@ public class UserRepository : BaseRepository<ApplicationUser>, IUserRepository
         return await _dbSet
             .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
     }
+
+    public async Task<ApplicationUser?> GetByEmailConfirmationToken(string token, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .FirstOrDefaultAsync(u => u.EmailConfirmationToken == token, cancellationToken);
+    }
 }
