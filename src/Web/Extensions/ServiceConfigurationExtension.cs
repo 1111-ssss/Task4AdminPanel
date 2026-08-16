@@ -23,6 +23,8 @@ public static class ServiceConfigurationExtension
         services.AddScoped<IConfirmEmailService, ConfirmEmailService>();
         services.AddScoped<IEmailSenderService, EmailSenderService>();
         services.AddScoped<IListUsersService, ListUsersService>();
+        services.AddScoped<IDeleteUserService, DeleteUserService>();
+        services.AddScoped<IBlockUserService, BlockUserService>();
 
         // Data Services
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();

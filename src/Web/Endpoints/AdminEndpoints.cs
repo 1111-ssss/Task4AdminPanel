@@ -17,6 +17,12 @@ public static class AdminEndpoints
         group.MapDelete("/users/{email}", DeleteUser)
             .RequireAuthorization();
 
+        group.MapPost("/users/{email}/block", BlockUser)
+            .RequireAuthorization();
+
+        group.MapPost("/users/{email}/unblock", UnblockUser)
+            .RequireAuthorization();
+
         return group;
     }
 
@@ -37,7 +43,29 @@ public static class AdminEndpoints
         CancellationToken cancellationToken
     )
     {
-        var result = await deleteUserService.DeleteUser(new DeleteUserRequest(email));
+        var result = await deleteUserService.DeleteUser(new UserRequest(email));
+
+        return result.ToMinimalApiResult();
+    }
+
+    private static async Task<IResult> BlockUser(
+        [FromServices] IBlockUserService blockUserService,
+        [FromRoute] string email,
+        CancellationToken cancellationToken
+    )
+    {
+        var result = await blockUserService.BlockUser(new UserRequest(email));
+
+        return result.ToMinimalApiResult();
+    }
+
+    private static async Task<IResult> UnblockUser(
+        [FromServices] IBlockUserService unblockUserService,
+        [FromRoute] string email,
+        CancellationToken cancellationToken
+    )
+    {
+        var result = await unblockUserService.UnblockUser(new UserRequest(email));
 
         return result.ToMinimalApiResult();
     }
