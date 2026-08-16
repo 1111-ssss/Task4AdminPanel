@@ -1,5 +1,5 @@
 namespace Business.Contracts.Admin;
 
-public record DeleteUserRequest(
+public record UserRequest(
     string Email
 );

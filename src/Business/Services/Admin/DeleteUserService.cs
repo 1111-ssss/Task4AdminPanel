@@ -10,23 +10,23 @@ namespace Business.Services.Admin;
 public class DeleteUserService : ServiceValidation, IDeleteUserService
 {
     private readonly IUserRepository _userRepository;
-    private readonly IValidator<DeleteUserRequest> _deleteUserValidator;
+    private readonly IValidator<UserRequest> _userValidator;
     private readonly ILogger<DeleteUserService> _logger;
 
     public DeleteUserService(
         IUserRepository userRepository,
-        IValidator<DeleteUserRequest> deleteUserValidator,
+        IValidator<UserRequest> userValidator,
         ILogger<DeleteUserService> logger
     )
     {
         _userRepository = userRepository;
-        _deleteUserValidator = deleteUserValidator;
+        _userValidator = userValidator;
         _logger = logger;
     }
 
-    public async Task<Result> DeleteUser(DeleteUserRequest request)
+    public async Task<Result> DeleteUser(UserRequest request)
     {
-        var validationResult = await Validate(_deleteUserValidator, request);
+        var validationResult = await Validate(_userValidator, request);
         if (!validationResult.IsSuccess)
         {
             return validationResult;

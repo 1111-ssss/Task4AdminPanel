@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace Business.Validators.Admin;
 
-public class DeleteUserValidator : AbstractValidator<DeleteUserRequest>
+public class UserValidator : AbstractValidator<UserRequest>
 {
-    public DeleteUserValidator()
+    public UserValidator()
     {
         RuleFor(x => x.Email)
             .NotEmpty()
