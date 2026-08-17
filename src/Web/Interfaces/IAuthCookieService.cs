@@ -1,4 +1,4 @@
-using Data.Enums;
+using Data.Common.Enums;
 
 namespace Web.Interfaces;
 

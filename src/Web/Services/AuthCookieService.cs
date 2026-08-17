@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Data.Enums;
+using Data.Common.Enums;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Web.Interfaces;

@@ -1,5 +1,5 @@
 using Data.Entities;
-using Data.Enums;
+using Data.Common.Enums;
 
 namespace Data.Interfaces.Repositories;
 

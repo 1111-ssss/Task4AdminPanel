@@ -1,6 +1,6 @@
 using Data.Database;
 using Data.Entities;
-using Data.Enums;
+using Data.Common.Enums;
 using Data.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
