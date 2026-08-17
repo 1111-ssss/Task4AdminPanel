@@ -6,6 +6,8 @@ using Business.Services.Admin;
 using Data.Interfaces.Services;
 using Data.Services;
 using FluentValidation;
+using Web.Interfaces;
+using Web.Services;
 
 namespace Web.Extensions;
 
@@ -28,6 +30,9 @@ public static class ServiceConfigurationExtension
 
         // Data Services
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
+
+        // Web Services
+        services.AddScoped<IAuthCookieService, AuthCookieService>();
 
         // Validators
         services.AddValidatorsFromAssembly(typeof(AssemblyMarker).Assembly);
