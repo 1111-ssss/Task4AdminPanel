@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace Data.Common.Result;
+namespace Business.Common.Result;
 
 public record Error(
     HttpStatusCode StatusCode,

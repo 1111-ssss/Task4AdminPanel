@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Ardalis.Result;
 using FluentValidation;
 using Data.Entities;
-using Data.Common.Enums;
+using Data.Enums;
 
 namespace Business.Services.Account;
 

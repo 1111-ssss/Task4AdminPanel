@@ -1,7 +1,7 @@
 using System.Net;
-using Data.Common.Result;
+using Business.Common.Result;
 
-namespace Data.Common.Errors;
+namespace Business.Common.Errors;
 
 public static class Errors
 {

@@ -1,4 +1,4 @@
-namespace Data.Common.Enums;
+namespace Data.Enums;
 
 public enum UserStatus
 {

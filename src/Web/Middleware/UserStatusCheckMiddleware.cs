@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Data.Common.Enums;
+using Data.Enums;
 using Data.Interfaces.Repositories;
 
 namespace Web.Middleware;

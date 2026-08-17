@@ -1,4 +1,4 @@
-using Ardalis.Result;
+using Data.Common.Result;
 
 namespace Business.Interfaces.Account;
 

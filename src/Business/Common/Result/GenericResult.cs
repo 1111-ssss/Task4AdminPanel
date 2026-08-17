@@ -1,4 +1,4 @@
-namespace Data.Common.Result;
+namespace Business.Common.Result;
 
 public class Result<T> : BaseResult
 {
@@ -7,7 +7,7 @@ public class Result<T> : BaseResult
         ? _value!
         : throw new InvalidOperationException("Can not access Value of a failed result.");
 
-    public Result(T? value, Error? error = null) : base(error)
+    public Result(T? value, Error? error = null, Dictionary<string, string>? details = null) : base(error, details)
     {
         _value = value;
     }

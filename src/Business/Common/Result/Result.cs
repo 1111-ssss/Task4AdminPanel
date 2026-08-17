@@ -1,4 +1,4 @@
-namespace Data.Common.Result;
+namespace Business.Common.Result;
 
 public class Result : BaseResult
 {

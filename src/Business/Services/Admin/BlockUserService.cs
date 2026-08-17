@@ -1,7 +1,7 @@
 using Ardalis.Result;
 using Business.Contracts.Admin;
 using Business.Interfaces.Admin;
-using Data.Common.Enums;
+using Data.Enums;
 using Data.Interfaces.Repositories;
 using FluentValidation;
 using Microsoft.Extensions.Logging;

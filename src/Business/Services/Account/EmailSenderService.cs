@@ -1,6 +1,6 @@
 using Ardalis.Result;
 using Business.Interfaces.Account;
-using Data.Common.Enums;
+using Data.Enums;
 using Data.Interfaces.Repositories;
 using FluentEmail.Core;
 using Microsoft.Extensions.Logging;
