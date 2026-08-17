@@ -1,7 +1,7 @@
-using Ardalis.Result.AspNetCore;
 using Business.Contracts.Admin;
 using Business.Interfaces.Admin;
 using Microsoft.AspNetCore.Mvc;
+using Web.Extensions;
 
 namespace Web.Endpoints;
 

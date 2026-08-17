@@ -1,4 +1,4 @@
-using Data.Common.Result;
+using Business.Common.Result;
 
 namespace Business.Interfaces.Account;
 

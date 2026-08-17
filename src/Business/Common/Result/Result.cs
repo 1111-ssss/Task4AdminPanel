@@ -2,7 +2,7 @@ namespace Business.Common.Result;
 
 public class Result : BaseResult
 {
-    protected Result(Error? error = null) : base(error) { }
+    public Result(Error? error = null, Dictionary<string, string>? details = null) : base(error, details) { }
 
     public static Result Success() => new();
     public static Result Failure(Error error) => new(error);

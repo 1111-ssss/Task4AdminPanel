@@ -1,4 +1,5 @@
-using Ardalis.Result;
+using Business.Common.Result;
+using Business.Common.Errors;
 using Business.Contracts.Admin;
 using Business.Interfaces.Admin;
 using Data.Interfaces.Repositories;
@@ -35,7 +36,7 @@ public class DeleteUserService : ServiceValidation, IDeleteUserService
         var user = await _userRepository.GetByEmail(request.Email);
         if (user is null)
         {
-            return Result.NotFound("User not found");
+            return Result.Failure(Errors.UserNotFound);
         }
 
         try
@@ -48,7 +49,7 @@ public class DeleteUserService : ServiceValidation, IDeleteUserService
         {
             _logger.LogError(ex, "Error while deleting user");
 
-            return Result.Error("Error while deleting user");
+            return Result.Failure(Errors.DatabaseError);
         }
 
         return Result.Success();

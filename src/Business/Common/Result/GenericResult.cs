@@ -14,4 +14,6 @@ public class Result<T> : BaseResult
 
     public static Result<T> Success(T value) => new(value);
     public static Result<T> Failure(Error error) => new(default, error);
+    public static implicit operator Result(Result<T> result) => new(result.Error, result.Details);
+    public static implicit operator Result<T>(Result result) => new(default, result.Error, result.Details);
 }
