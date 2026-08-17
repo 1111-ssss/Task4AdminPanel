@@ -46,6 +46,8 @@ public class EmailSenderService : IEmailSenderService
         var generatedToken = GenerateEmailConfirmationToken();
         var confirmationLink = link + generatedToken;
 
+        _logger.LogInformation($"Sending confirmation email to {email}");
+        
         await _fluentEmail
             .To(email)
             .Subject("New login detected")
@@ -54,6 +56,8 @@ public class EmailSenderService : IEmailSenderService
                 isHtml: true
             )
             .SendAsync();
+
+        _logger.LogInformation($"Confirmation email sent to {email}");
 
         try
         {

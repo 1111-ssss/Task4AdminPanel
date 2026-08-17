@@ -37,7 +37,7 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
         var user = await _userRepository.GetByEmail(request.Email);
         if (user is null)
         {
-            return Result.NotFound("User with this email does not exist");
+            return Result.Unauthorized("Invalid credentials");
         }
 
         if (user.Status == UserStatus.Unverified && (user.EmailConfirmationExpiration is null || user.EmailConfirmationExpiration < DateTime.UtcNow))
@@ -47,7 +47,7 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
 
         if (user.Status == UserStatus.Blocked)
         {
-            return Result.Conflict("User is blocked");
+            return Result.Forbidden("User is blocked");
         }
 
         var validationResult = await Validate(_loginUserValidator, request);
