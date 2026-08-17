@@ -1,6 +1,8 @@
 using Business;
 using Business.Interfaces.Account;
+using Business.Interfaces.Admin;
 using Business.Services.Account;
+using Business.Services.Admin;
 using Data.Interfaces.Services;
 using Data.Services;
 using FluentValidation;
@@ -20,6 +22,9 @@ public static class ServiceConfigurationExtension
         services.AddScoped<IAccountLoginService, AccountLoginService>();
         services.AddScoped<IConfirmEmailService, ConfirmEmailService>();
         services.AddScoped<IEmailSenderService, EmailSenderService>();
+        services.AddScoped<IListUsersService, ListUsersService>();
+        services.AddScoped<IDeleteUserService, DeleteUserService>();
+        services.AddScoped<IBlockUserService, BlockUserService>();
 
         // Data Services
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();

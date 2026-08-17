@@ -13,8 +13,11 @@ public static class AccountEndpoints
         var group = endpoints.MapGroup("/api/account");
 
         group.MapPost("/register", Register);
+
         group.MapPost("/login", Login);
+
         group.MapPost("/logout", Logout);
+        
         group.MapPost("/confirm-email", ConfirmEmail);
         
         return group;
@@ -100,6 +103,6 @@ public static class AccountEndpoints
 
     private static string GetConfirmationLink(HttpRequest httpRequest)
     {
-        return $"{httpRequest.Scheme}://{httpRequest.Host}/Account/ConfirmEmail?token=";
+        return $"{httpRequest.Scheme}://{httpRequest.Host}/api/account/confirm-email?token=";
     }
 }
