@@ -1,4 +1,5 @@
-using Ardalis.Result;
+using Business.Common.Result;
+using Business.Common.Errors;
 using Business.Contracts.Account;
 using Business.Interfaces.Account;
 using Data.Enums;
@@ -30,7 +31,7 @@ public class ConfirmEmailService : ServiceValidation, IConfirmEmailService
         var user = await _userRepository.GetByEmailConfirmationToken(request.Token);
         if (user is null)
         {
-            return Result.NotFound("Invalid token");
+            return Result.Failure(Errors.InvalidEmailToken);
         }
 
         var validationResult = await Validate(_confirmEmailValidator, request);
@@ -41,12 +42,12 @@ public class ConfirmEmailService : ServiceValidation, IConfirmEmailService
 
         if (user.Status != UserStatus.Unverified)
         {
-            return Result.Conflict("User is already verified or blocked");
+            return Result.Failure(Errors.UserIsVerifiedOrBlocked);
         }
 
         if (user.EmailConfirmationExpiration is null || user.EmailConfirmationExpiration < DateTime.UtcNow)
         {
-            return Result.Invalid(new ValidationError("Token expired"));
+            return Result.Failure(Errors.TokenExpired);
         }
 
         try {
@@ -62,10 +63,10 @@ public class ConfirmEmailService : ServiceValidation, IConfirmEmailService
         {
             _logger.LogError(ex, "Error while confirming email");
 
-            return Result.Error("Error while confirming email");
+            return Result.Failure(Errors.DatabaseError);
         }
 
-        return Result.Success(
+        return Result<UserResponse>.Success(
             new UserResponse(
                 Name: user.Name,
                 Surname: user.Surname,

@@ -3,7 +3,8 @@ using Business.Contracts.Account;
 using Business.Interfaces.Account;
 using Data.Interfaces.Services;
 using Microsoft.Extensions.Logging;
-using Ardalis.Result;
+using Business.Common.Result;
+using Business.Common.Errors;
 using FluentValidation;
 using Data.Entities;
 using Data.Enums;
@@ -35,7 +36,7 @@ public class AccountRegisterService : ServiceValidation, IAccountRegisterService
         var user = await _userRepository.GetByEmail(request.Email);
         if (user is not null)
         {
-            return Result.Conflict("User with this email already exists");
+            return Result.Failure(Errors.EmailAlreadyExists);
         }
 
         var validationResult = await Validate(_registerUserValidator, request);
@@ -68,10 +69,10 @@ public class AccountRegisterService : ServiceValidation, IAccountRegisterService
         {
             _logger.LogError(ex, "Error while registering user");
 
-            return Result.Error("Error while registering user");
+            return Result.Failure(Errors.DatabaseError);
         }
 
-        return Result.Success(
+        return Result<UserResponse>.Success(
             new UserResponse(
                 Name: newUser.Name,
                 Surname: newUser.Surname,

@@ -1,8 +1,8 @@
 using Business.Contracts.Account;
 using Business.Interfaces.Account;
 using Microsoft.AspNetCore.Mvc;
-using Ardalis.Result.AspNetCore;
 using Web.Interfaces;
+using Web.Extensions;
 
 namespace Web.Endpoints;
 

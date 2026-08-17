@@ -1,4 +1,5 @@
-using Ardalis.Result;
+using Business.Common.Result;
+using Business.Common.Errors;
 using Business.Contracts.Account;
 using Business.Interfaces.Account;
 using Data.Enums;
@@ -37,7 +38,7 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
         var user = await _userRepository.GetByEmail(request.Email);
         if (user is null)
         {
-            return Result.Unauthorized("Invalid credentials");
+            return Result.Failure(Errors.InvalidCredentials);
         }
 
         if (user.Status == UserStatus.Unverified && (user.EmailConfirmationExpiration is null || user.EmailConfirmationExpiration < DateTime.UtcNow))
@@ -47,7 +48,7 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
 
         if (user.Status == UserStatus.Blocked)
         {
-            return Result.Forbidden("User is blocked");
+            return Result.Failure(Errors.UserBlocked);
         }
 
         var validationResult = await Validate(_loginUserValidator, request);
@@ -58,7 +59,7 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
 
         if (!_passwordHasher.VerifyPassword(request.Password, user.PasswordHash))
         {
-            return Result.Unauthorized("Invalid credentials");
+            return Result.Failure(Errors.InvalidCredentials);
         }
 
         try
@@ -72,10 +73,10 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
         {
             _logger.LogError(ex, "Error while updating user last login time");
 
-            return Result.Error("Error while updating user last login time");
+            return Result.Failure(Errors.DatabaseError);
         }
 
-        return Result.Success(
+        return Result<UserResponse>.Success(
             new UserResponse(
                 Name: user.Name,
                 Surname: user.Surname,
