@@ -1,4 +1,5 @@
-using Ardalis.Result;
+using Business.Common.Result;
+using Business.Common.Errors;
 using Business.Interfaces.Account;
 using Data.Enums;
 using Data.Interfaces.Repositories;
@@ -30,17 +31,17 @@ public class EmailSenderService : IEmailSenderService
         var user = await _userRepository.GetByEmail(email);
         if (user is null)
         {
-            return Result.NotFound("User not found");
+            return Result.Failure(Errors.UserNotFound);
         }
 
         if (user.Status != UserStatus.Unverified)
         {
-            return Result.Conflict("User is already verified or blocked");
+            return Result.Failure(Errors.UserIsVerifiedOrBlocked);
         }
 
         if (user.EmailConfirmationToken is not null && user.EmailConfirmationExpiration > DateTime.UtcNow)
         {
-            return Result.Conflict("Email confirmation token already sent and is still valid");
+            return Result.Failure(Errors.TokenAlreadySentAndValid);
         }
 
         var generatedToken = GenerateEmailConfirmationToken();
@@ -50,7 +51,7 @@ public class EmailSenderService : IEmailSenderService
         
         await _fluentEmail
             .To(email)
-            .Subject("New login detected")
+            .Subject(EmailSenderConstants.EMAIL_SUBJECT)
             .Body(
                 string.Format(EmailSenderConstants.EMAIL_BODY, confirmationLink),
                 isHtml: true
@@ -74,7 +75,7 @@ public class EmailSenderService : IEmailSenderService
         {
             _logger.LogError(ex, "Error while sending confirmation email");
 
-            return Result.Error("Error while sending confirmation email");
+            return Result.Failure(Errors.DatabaseError);
         }
 
         return Result.Success();

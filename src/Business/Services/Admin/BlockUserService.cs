@@ -1,4 +1,5 @@
-using Ardalis.Result;
+using Business.Common.Errors;
+using Business.Common.Result;
 using Business.Contracts.Admin;
 using Business.Interfaces.Admin;
 using Data.Enums;
@@ -36,12 +37,12 @@ public class BlockUserService : ServiceValidation, IBlockUserService
         var user = await _userRepository.GetByEmail(request.Email);
         if (user is null)
         {
-            return Result.NotFound("User not found");
+            return Result.Failure(Errors.UserNotFound);
         }
 
         if (user.Status == UserStatus.Blocked)
         {
-            return Result.Conflict("User is already blocked");
+            return Result.Failure(Errors.UserAlreadyBlocked);
         }
 
         try
@@ -55,7 +56,7 @@ public class BlockUserService : ServiceValidation, IBlockUserService
         {
             _logger.LogError(ex, "Error while blocking user");
 
-            return Result.Error("Error while blocking user");
+            return Result.Failure(Errors.DatabaseError);
         }
 
         return Result.Success();
@@ -72,12 +73,12 @@ public class BlockUserService : ServiceValidation, IBlockUserService
         var user = await _userRepository.GetByEmail(request.Email);
         if (user is null)
         {
-            return Result.NotFound("User not found");
+            return Result.Failure(Errors.UserNotFound);
         }
 
         if (user.Status != UserStatus.Blocked)
         {
-            return Result.Conflict("User is not blocked");
+            return Result.Failure(Errors.UserNotBlocked);
         }
 
         try
@@ -98,7 +99,7 @@ public class BlockUserService : ServiceValidation, IBlockUserService
         {
             _logger.LogError(ex, "Error while unblocking user");
 
-            return Result.Error("Error while unblocking user");
+            return Result.Failure(Errors.DatabaseError);
         }
 
         return Result.Success();

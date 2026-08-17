@@ -3,6 +3,7 @@ namespace Business.Constants;
 public class EmailSenderConstants
 {
     public const int EMAIL_CONFIRMATION_TOKEN_EXPIRATION_MINUTES = 30;
+    public static readonly string EMAIL_SUBJECT = "New login detected";
     public static readonly string EMAIL_BODY = $@"
         <h2>Email confirmation</h2>
         <p>To confirm your email, please click the link below:</p>
