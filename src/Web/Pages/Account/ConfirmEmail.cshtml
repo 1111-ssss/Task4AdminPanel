@@ -1,0 +1,23 @@
+@page
+@model Account.ConfirmEmailModel
+@{
+    ViewData["Title"] = "Confirm Email";
+}
+
+<h1 class="fw-bold mb-4" style="color:#0d6efd;">THE APP</h1>
+<h2 class="mb-4">Email confirmation</h2>
+
+<div id="confirmStatus" class="w-100" style="max-width: 400px;">
+    <div class="d-flex align-items-center gap-2 text-muted">
+        <div class="spinner-border spinner-border-sm" role="status"></div>
+        <span>Confirming your email...</span>
+    </div>
+</div>
+
+<div class="mt-4" style="max-width: 400px;">
+    <p>Wait a moment</a>
+</div>
+
+@section Scripts {
+    <script src="~/js/confirm-email.js" asp-append-version="true"></script>
+}
