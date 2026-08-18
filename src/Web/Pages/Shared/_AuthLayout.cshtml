@@ -1,0 +1,21 @@
+@{
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="row g-0 h-100">
+            <div class="col-md-5 d-flex flex-column justify-content-center align-items-start px-5">
+                @RenderBody()
+            </div>
+
+            <div class="col-md-7 d-none d-md-block auth-image-col"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await RenderSectionAsync("Scripts", required: false)
+}
