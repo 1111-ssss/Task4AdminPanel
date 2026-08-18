@@ -7,5 +7,7 @@ public interface IBaseRepository<TEntity> where TEntity : class, IEntity
     public void Add(TEntity entity);
     public void Update(TEntity entity);
     public void Delete(TEntity entity);
+    public void AddRange(IEnumerable<TEntity> entities);
+    public Task<bool> AnyAsync(CancellationToken cancellationToken = default);
     public Task<int> SaveChanges(CancellationToken cancellationToken = default);
 }

@@ -32,7 +32,7 @@ public static class AdminEndpoints
         CancellationToken cancellationToken
     )
     {
-        var result = await listUsersService.ListUsers(request);
+        var result = await listUsersService.ListUsers(request, cancellationToken);
 
         return result.ToMinimalApiResult();
     }
@@ -43,7 +43,7 @@ public static class AdminEndpoints
         CancellationToken cancellationToken
     )
     {
-        var result = await deleteUserService.DeleteUser(new UserRequest(email));
+        var result = await deleteUserService.DeleteUser(new UserRequest(email), cancellationToken);
 
         return result.ToMinimalApiResult();
     }
@@ -54,7 +54,7 @@ public static class AdminEndpoints
         CancellationToken cancellationToken
     )
     {
-        var result = await blockUserService.BlockUser(new UserRequest(email));
+        var result = await blockUserService.BlockUser(new UserRequest(email), cancellationToken);
 
         return result.ToMinimalApiResult();
     }
@@ -65,7 +65,7 @@ public static class AdminEndpoints
         CancellationToken cancellationToken
     )
     {
-        var result = await unblockUserService.UnblockUser(new UserRequest(email));
+        var result = await unblockUserService.UnblockUser(new UserRequest(email), cancellationToken);
 
         return result.ToMinimalApiResult();
     }

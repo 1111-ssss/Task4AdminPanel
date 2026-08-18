@@ -25,18 +25,14 @@ public static class AccountEndpoints
 
     private static async Task<IResult> Register(
         [FromServices] IAccountRegisterService accountRegisterService,
-        [FromServices] IEmailSenderService emailSenderService,
         RegisterUserRequest request,
         HttpRequest httpRequest,
         CancellationToken cancellationToken
     )
     {
-        var result = await accountRegisterService.Register(request);
+        Func<string> getLink = () => GetConfirmationLink(httpRequest);
 
-        if (result.IsSuccess)
-        {
-            await emailSenderService.SendConfirmationEmail(result.Value.Email, GetConfirmationLink(httpRequest));
-        }
+        var result = await accountRegisterService.Register(request, getLink, cancellationToken);
 
         return result.ToMinimalApiResult();
     }
@@ -51,7 +47,7 @@ public static class AccountEndpoints
     {
         Func<string> getLink = () => GetConfirmationLink(httpRequest);
 
-        var result = await accountLoginService.Login(request, getLink);
+        var result = await accountLoginService.Login(request, getLink, cancellationToken);
 
         if (result.IsSuccess)
         {
@@ -85,7 +81,7 @@ public static class AccountEndpoints
         CancellationToken cancellationToken
     )
     {
-        var result = await accountConfirmEmailService.ConfirmEmail(new ConfirmEmailRequest(token));
+        var result = await accountConfirmEmailService.ConfirmEmail(new ConfirmEmailRequest(token), cancellationToken);
 
         if (result.IsSuccess)
         {
@@ -103,6 +99,6 @@ public static class AccountEndpoints
 
     private static string GetConfirmationLink(HttpRequest httpRequest)
     {
-        return $"{httpRequest.Scheme}://{httpRequest.Host}/api/account/confirm-email?token=";
+        return $"{httpRequest.Scheme}://{httpRequest.Host}/Account/ConfirmEmail?token=";
     }
 }

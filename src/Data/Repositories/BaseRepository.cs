@@ -29,7 +29,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity>
 
     public void Add(TEntity entity)
     {
-        _dbSet.AddAsync(entity);
+        _dbSet.Add(entity);
     }
 
     public void Update(TEntity entity)
@@ -40,6 +40,16 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity>
     public void Delete(TEntity entity)
     {
         _dbSet.Remove(entity);
+    }
+
+    public void AddRange(IEnumerable<TEntity> entities)
+    {
+        _dbSet.AddRange(entities);
+    }
+
+    public Task<bool> AnyAsync(CancellationToken cancellationToken = default)
+    {
+        return _dbSet.AnyAsync(cancellationToken);
     }
 
     public async Task<int> SaveChanges(CancellationToken cancellationToken = default)

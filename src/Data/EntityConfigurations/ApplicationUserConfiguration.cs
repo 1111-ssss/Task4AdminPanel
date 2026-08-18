@@ -45,12 +45,12 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
 
         entity.Property(u => u.RegistrationTime)
             .HasColumnName("registration_time")
-            .HasColumnType("timestamp without time zone")
+            .HasColumnType("timestamp with time zone")
             .IsRequired();
 
         entity.Property(u => u.LastLoginTime)
             .HasColumnName("last_login_time")
-            .HasColumnType("timestamp without time zone")
+            .HasColumnType("timestamp with time zone")
             .IsRequired();
 
         entity.Property(u => u.EmailConfirmationToken)
@@ -59,6 +59,6 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
 
         entity.Property(u => u.EmailConfirmationExpiration)
             .HasColumnName("email_confirmation_expiration")
-            .HasColumnType("timestamp without time zone");
+            .HasColumnType("timestamp with time zone");
     }
 }

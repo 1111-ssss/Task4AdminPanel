@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260817085849_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260818084231_InitalMigration")]
+    partial class InitalMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,7 +41,7 @@ namespace Data.Migrations
                         .HasColumnName("email");
 
                     b.Property<DateTime?>("EmailConfirmationExpiration")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("email_confirmation_expiration");
 
                     b.Property<string>("EmailConfirmationToken")
@@ -50,7 +50,7 @@ namespace Data.Migrations
                         .HasColumnName("email_confirmation_token");
 
                     b.Property<DateTime>("LastLoginTime")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_login_time");
 
                     b.Property<string>("Name")
@@ -65,7 +65,7 @@ namespace Data.Migrations
                         .HasColumnName("password_hash");
 
                     b.Property<DateTime>("RegistrationTime")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("registration_time");
 
                     b.Property<string>("Status")

@@ -38,7 +38,7 @@ namespace Data.Migrations
                         .HasColumnName("email");
 
                     b.Property<DateTime?>("EmailConfirmationExpiration")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("email_confirmation_expiration");
 
                     b.Property<string>("EmailConfirmationToken")
@@ -47,7 +47,7 @@ namespace Data.Migrations
                         .HasColumnName("email_confirmation_token");
 
                     b.Property<DateTime>("LastLoginTime")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_login_time");
 
                     b.Property<string>("Name")
@@ -62,7 +62,7 @@ namespace Data.Migrations
                         .HasColumnName("password_hash");
 
                     b.Property<DateTime>("RegistrationTime")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("registration_time");
 
                     b.Property<string>("Status")

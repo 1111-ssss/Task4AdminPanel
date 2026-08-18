@@ -26,18 +26,18 @@ public class ConfirmEmailService : ServiceValidation, IConfirmEmailService
         _logger = logger;
     }
 
-    public async Task<Result<UserResponse>> ConfirmEmail(ConfirmEmailRequest request)
+    public async Task<Result<UserResponse>> ConfirmEmail(ConfirmEmailRequest request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByEmailConfirmationToken(request.Token);
-        if (user is null)
-        {
-            return Result.Failure(Errors.InvalidEmailToken);
-        }
-
-        var validationResult = await Validate(_confirmEmailValidator, request);
+        var validationResult = await Validate(_confirmEmailValidator, request, cancellationToken);
         if (!validationResult.IsSuccess)
         {
             return validationResult;
+        }
+
+        var user = await _userRepository.GetByEmailConfirmationToken(request.Token, cancellationToken);
+        if (user is null)
+        {
+            return Result.Failure(Errors.InvalidEmailToken);
         }
 
         if (user.Status != UserStatus.Unverified)
@@ -57,7 +57,7 @@ public class ConfirmEmailService : ServiceValidation, IConfirmEmailService
 
             _userRepository.Update(user);
 
-            await _userRepository.SaveChanges();
+            await _userRepository.SaveChanges(cancellationToken);
         }
         catch (Exception ex)
         {

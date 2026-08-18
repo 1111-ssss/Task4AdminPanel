@@ -1,5 +1,3 @@
-using Data.Database;
-using Microsoft.EntityFrameworkCore;
 using Web.Middleware;
 
 namespace Web.Extensions;
@@ -23,12 +21,6 @@ public static class MiddlewareConfigurationExtension
         app.MapStaticAssets();
         app.MapRazorPages()
             .WithStaticAssets();
-
-        using (var scope = app.Services.CreateScope())
-        {
-            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            dbContext.Database.Migrate();
-        }
 
         return app;
     }

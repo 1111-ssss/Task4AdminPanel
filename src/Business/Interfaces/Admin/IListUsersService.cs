@@ -5,5 +5,5 @@ namespace Business.Interfaces.Admin;
 
 public interface IListUsersService
 {
-    Task<Result<ListUsersResponse>> ListUsers(ListUsersRequest request);
+    Task<Result<ListUsersResponse>> ListUsers(ListUsersRequest request, CancellationToken cancellationToken);
 }

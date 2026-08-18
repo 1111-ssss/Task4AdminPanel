@@ -26,15 +26,15 @@ public class BlockUserService : ServiceValidation, IBlockUserService
         _logger = logger;
     }
 
-    public async Task<Result> BlockUser(UserRequest request)
+    public async Task<Result> BlockUser(UserRequest request, CancellationToken cancellationToken)
     {
-        var validationResult = await Validate(_userValidator, request);
+        var validationResult = await Validate(_userValidator, request, cancellationToken);
         if (!validationResult.IsSuccess)
         {
             return validationResult;
         }
 
-        var user = await _userRepository.GetByEmail(request.Email);
+        var user = await _userRepository.GetByEmail(request.Email, cancellationToken);
         if (user is null)
         {
             return Result.Failure(Errors.UserNotFound);
@@ -50,7 +50,7 @@ public class BlockUserService : ServiceValidation, IBlockUserService
             user.Status = UserStatus.Blocked;
             _userRepository.Update(user);
 
-            await _userRepository.SaveChanges();
+            await _userRepository.SaveChanges(cancellationToken);
         }
         catch (Exception ex)
         {
@@ -62,15 +62,15 @@ public class BlockUserService : ServiceValidation, IBlockUserService
         return Result.Success();
     }
 
-    public async Task<Result> UnblockUser(UserRequest request)
+    public async Task<Result> UnblockUser(UserRequest request, CancellationToken cancellationToken)
     {
-        var validationResult = await Validate(_userValidator, request);
+        var validationResult = await Validate(_userValidator, request, cancellationToken);
         if (!validationResult.IsSuccess)
         {
             return validationResult;
         }
 
-        var user = await _userRepository.GetByEmail(request.Email);
+        var user = await _userRepository.GetByEmail(request.Email, cancellationToken);
         if (user is null)
         {
             return Result.Failure(Errors.UserNotFound);
@@ -93,7 +93,7 @@ public class BlockUserService : ServiceValidation, IBlockUserService
             }
             _userRepository.Update(user);
 
-            await _userRepository.SaveChanges();
+            await _userRepository.SaveChanges(cancellationToken);
         }
         catch (Exception ex)
         {

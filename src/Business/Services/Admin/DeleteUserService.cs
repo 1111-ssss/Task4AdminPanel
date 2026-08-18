@@ -25,15 +25,15 @@ public class DeleteUserService : ServiceValidation, IDeleteUserService
         _logger = logger;
     }
 
-    public async Task<Result> DeleteUser(UserRequest request)
+    public async Task<Result> DeleteUser(UserRequest request, CancellationToken cancellationToken)
     {
-        var validationResult = await Validate(_userValidator, request);
+        var validationResult = await Validate(_userValidator, request, cancellationToken);
         if (!validationResult.IsSuccess)
         {
             return validationResult;
         }
 
-        var user = await _userRepository.GetByEmail(request.Email);
+        var user = await _userRepository.GetByEmail(request.Email, cancellationToken);
         if (user is null)
         {
             return Result.Failure(Errors.UserNotFound);
@@ -43,7 +43,7 @@ public class DeleteUserService : ServiceValidation, IDeleteUserService
         {
             _userRepository.Delete(user);
 
-            await _userRepository.SaveChanges();
+            await _userRepository.SaveChanges(cancellationToken);
         }
         catch (Exception ex)
         {

@@ -25,9 +25,9 @@ public class ListUsersService : ServiceValidation, IListUsersService
         _logger = logger;
     }
 
-    public async Task<Result<ListUsersResponse>> ListUsers(ListUsersRequest request)
+    public async Task<Result<ListUsersResponse>> ListUsers(ListUsersRequest request, CancellationToken cancellationToken)
     {
-        var validationResult = await Validate(_listUsersValidator, request);
+        var validationResult = await Validate(_listUsersValidator, request, cancellationToken);
         if (!validationResult.IsSuccess)
         {
             return validationResult;
@@ -38,7 +38,8 @@ public class ListUsersService : ServiceValidation, IListUsersService
             request.PageSize,
             request.OrderBy,
             request.Search,
-            request.IsAsc
+            request.IsAsc,
+            cancellationToken
         );
 
         var userResponses = users.Select(u => new UserResponse(

@@ -1,0 +1,40 @@
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    /* background: #e9ecef; */
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 1300px;
+    min-height: 720px;
+    background: #fff;
+    border-radius: 1.25rem;
+    /* box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); */
+    overflow: hidden;
+}
+
+.auth-card .row {
+    min-height: 720px;
+}
+
+.auth-image-col {
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    background-image: url('/images/login-page-geometric-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+@media (max-width: 767.98px) {
+    .login-card {
+        min-height: auto;
+    }
+
+    .login-card .row {
+        min-height: auto;
+    }
+}
