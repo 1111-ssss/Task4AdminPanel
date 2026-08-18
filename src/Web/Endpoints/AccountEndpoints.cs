@@ -47,7 +47,7 @@ public static class AccountEndpoints
     {
         Func<string> getLink = () => GetConfirmationLink(httpRequest);
 
-        var result = await accountLoginService.Login(request, getLink);
+        var result = await accountLoginService.Login(request, getLink, cancellationToken);
 
         if (result.IsSuccess)
         {
@@ -81,7 +81,7 @@ public static class AccountEndpoints
         CancellationToken cancellationToken
     )
     {
-        var result = await accountConfirmEmailService.ConfirmEmail(new ConfirmEmailRequest(token));
+        var result = await accountConfirmEmailService.ConfirmEmail(new ConfirmEmailRequest(token), cancellationToken);
 
         if (result.IsSuccess)
         {

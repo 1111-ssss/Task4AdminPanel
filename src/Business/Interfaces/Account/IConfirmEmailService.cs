@@ -5,5 +5,5 @@ namespace Business.Interfaces.Account;
 
 public interface IConfirmEmailService
 {
-    Task<Result<UserResponse>> ConfirmEmail(ConfirmEmailRequest request);
+    Task<Result<UserResponse>> ConfirmEmail(ConfirmEmailRequest request, CancellationToken cancellationToken = default);
 }

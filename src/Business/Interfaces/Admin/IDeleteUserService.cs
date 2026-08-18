@@ -5,5 +5,5 @@ namespace Business.Interfaces.Admin;
 
 public interface IDeleteUserService
 {
-    Task<Result> DeleteUser(UserRequest request);
+    Task<Result> DeleteUser(UserRequest request, CancellationToken cancellationToken);
 }

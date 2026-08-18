@@ -33,15 +33,15 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
         _logger = logger;
     }
 
-    public async Task<Result<UserResponse>> Login(LoginUserRequest request, Func<string> getLink)
+    public async Task<Result<UserResponse>> Login(LoginUserRequest request, Func<string> getLink, CancellationToken cancellationToken)
     {
-        var validationResult = await Validate(_loginUserValidator, request);
+        var validationResult = await Validate(_loginUserValidator, request, cancellationToken);
         if (!validationResult.IsSuccess)
         {
             return validationResult;
         }
 
-        var user = await _userRepository.GetByEmail(request.Email);
+        var user = await _userRepository.GetByEmail(request.Email, cancellationToken);
         if (user is null)
         {
             return Result.Failure(Errors.InvalidCredentials);
@@ -50,7 +50,7 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
         if (user.Status == UserStatus.Unverified && (user.EmailConfirmationExpiration is null || user.EmailConfirmationExpiration < DateTime.UtcNow))
         {
             var generatedToken = _emailSenderService.GenerateEmailConfirmationToken();
-            await _emailSenderService.SendConfirmationEmail(user.Email, getLink(), generatedToken);
+            await _emailSenderService.SendConfirmationEmail(user.Email, getLink(), generatedToken, cancellationToken);
             
             try
             {
@@ -59,7 +59,7 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
 
                 _userRepository.Update(user);
 
-                await _userRepository.SaveChanges();
+                await _userRepository.SaveChanges(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -82,7 +82,7 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
             user.LastLoginTime = DateTime.UtcNow;
             _userRepository.Update(user);
 
-            await _userRepository.SaveChanges();
+            await _userRepository.SaveChanges(cancellationToken);
         }
         catch (Exception ex)
         {
