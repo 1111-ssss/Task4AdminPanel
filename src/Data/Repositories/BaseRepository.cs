@@ -42,6 +42,16 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity>
         _dbSet.Remove(entity);
     }
 
+    public void AddRange(IEnumerable<TEntity> entities)
+    {
+        _dbSet.AddRange(entities);
+    }
+
+    public Task<bool> AnyAsync(CancellationToken cancellationToken = default)
+    {
+        return _dbSet.AnyAsync(cancellationToken);
+    }
+
     public async Task<int> SaveChanges(CancellationToken cancellationToken = default)
     {
         return await _context.SaveChangesAsync(cancellationToken);

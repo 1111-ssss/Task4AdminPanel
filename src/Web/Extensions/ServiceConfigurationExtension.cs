@@ -33,6 +33,7 @@ public static class ServiceConfigurationExtension
 
         // Data Services
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
+        services.AddScoped<IDatabaseSeeder, DatabaseSeeder>();
 
         // Web Services
         services.AddScoped<IAuthCookieService, AuthCookieService>();
@@ -40,6 +41,7 @@ public static class ServiceConfigurationExtension
         // Validators
         services.AddValidatorsFromAssembly(typeof(AssemblyMarker).Assembly);
 
+        // Email sender service
         services
             .AddFluentEmail(configuration["Email:From"])
             .AddMailKitSender(new SmtpClientOptions

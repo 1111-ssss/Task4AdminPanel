@@ -13,7 +13,11 @@ builder.Services.AddServiceConfiguration(builder.Configuration);
 
 var app = builder.Build();
 
+// Middleware
 app.AddMiddlewareConfiguration();
+
+// Database migrations, seeding
+await app.AddApplicationConfiguration();
 
 // Endpoints
 app.MapCustomRoutes();
