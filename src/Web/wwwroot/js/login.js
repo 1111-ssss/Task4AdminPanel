@@ -5,6 +5,11 @@ $(function () {
 
         window.history.replaceState({}, document.title, window.location.pathname);
     }
+    else if (urlParams.get('blocked') === '1') {
+        $('#accountBlocked').show();
+
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
 
     initAuthForm({
         formId: '#loginForm',

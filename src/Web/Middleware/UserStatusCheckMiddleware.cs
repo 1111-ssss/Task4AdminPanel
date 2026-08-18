@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Data.Enums;
 using Data.Interfaces.Repositories;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Web.Middleware;
 
@@ -25,13 +26,10 @@ public class UserStatusCheckMiddleware
 
                 if (userStatus == UserStatus.Blocked)
                 {
-                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    context.Response.ContentType = "application/json";
-                    await context.Response.WriteAsJsonAsync(new { 
-                        code = "USER_BLOCKED", 
-                        message = "User is blocked"
-                    });
-                    return;
+                    await context.SignOutAsync();
+
+                    context.Response.Redirect("/login?blocked=1");
+                    return; 
                 }
             }
         }
