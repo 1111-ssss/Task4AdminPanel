@@ -11,7 +11,7 @@ public static class ResultExtension
             return TypedResults.Ok(result.Value);
         }
 
-        return result.ToMinimalApiResult();
+        return ((Result)result).ToMinimalApiResult();
     }
 
     public static IResult ToMinimalApiResult(this BaseResult result)
