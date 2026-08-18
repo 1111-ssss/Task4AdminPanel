@@ -18,7 +18,7 @@ public static class AccountEndpoints
 
         group.MapPost("/logout", Logout);
         
-        group.MapPost("/confirm-email", ConfirmEmail);
+        group.MapGet("/confirm-email", ConfirmEmail);
         
         return group;
     }
@@ -32,7 +32,7 @@ public static class AccountEndpoints
     {
         Func<string> getLink = () => GetConfirmationLink(httpRequest);
 
-        var result = await accountRegisterService.Register(request, getLink);
+        var result = await accountRegisterService.Register(request, getLink, cancellationToken);
 
         return result.ToMinimalApiResult();
     }
@@ -99,6 +99,6 @@ public static class AccountEndpoints
 
     private static string GetConfirmationLink(HttpRequest httpRequest)
     {
-        return $"{httpRequest.Scheme}://{httpRequest.Host}/api/account/confirm-email?token=";
+        return $"{httpRequest.Scheme}://{httpRequest.Host}/Account/ConfirmEmail?token=";
     }
 }

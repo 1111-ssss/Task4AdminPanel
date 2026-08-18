@@ -34,15 +34,15 @@ public class AccountRegisterService : ServiceValidation, IAccountRegisterService
         _logger = logger;
     }
     
-    public async Task<Result<UserResponse>> Register(RegisterUserRequest request, Func<string> getLink)
+    public async Task<Result<UserResponse>> Register(RegisterUserRequest request, Func<string> getLink, CancellationToken cancellationToken)
     {
-        var validationResult = await Validate(_registerUserValidator, request);
+        var validationResult = await Validate(_registerUserValidator, request, cancellationToken);
         if (!validationResult.IsSuccess)
         {
             return validationResult;
         }
 
-        var user = await _userRepository.GetByEmail(request.Email);
+        var user = await _userRepository.GetByEmail(request.Email, cancellationToken);
         if (user is not null)
         {
             return Result.Failure(Errors.EmailAlreadyExists);
@@ -69,7 +69,7 @@ public class AccountRegisterService : ServiceValidation, IAccountRegisterService
         {
             _userRepository.Add(newUser);
 
-            await _userRepository.SaveChanges();
+            await _userRepository.SaveChanges(cancellationToken);
         }
         catch (Exception ex)
         {
@@ -78,7 +78,7 @@ public class AccountRegisterService : ServiceValidation, IAccountRegisterService
             return Result.Failure(Errors.DatabaseError);
         }
 
-        await _emailSenderService.SendConfirmationEmail(newUser.Email, getLink(), token);
+        await _emailSenderService.SendConfirmationEmail(newUser.Email, getLink(), token, cancellationToken);
 
         return Result<UserResponse>.Success(
             new UserResponse(

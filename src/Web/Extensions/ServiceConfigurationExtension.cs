@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Mail;
 using Business;
 using Business.Interfaces.Account;
 using Business.Interfaces.Admin;
@@ -5,6 +7,7 @@ using Business.Services.Account;
 using Business.Services.Admin;
 using Data.Interfaces.Services;
 using Data.Services;
+using FluentEmail.MailKitSmtp;
 using FluentValidation;
 using Web.Interfaces;
 using Web.Services;
@@ -39,12 +42,15 @@ public static class ServiceConfigurationExtension
 
         services
             .AddFluentEmail(configuration["Email:From"])
-            .AddSmtpSender(
-                configuration["Email:SmtpServer"],
-                int.Parse(configuration["Email:Port"] ?? "587"),
-                configuration["Email:From"],
-                configuration["Email:Password"]
-            );
+            .AddMailKitSender(new SmtpClientOptions
+            {
+                Server = configuration["Email:SmtpServer"],
+                Port = int.Parse(configuration["Email:Port"]!),
+                UseSsl = true,
+                RequiresAuthentication = true,
+                User = configuration["Email:From"],
+                Password = configuration["Email:Password"]
+            });
 
         return services;
     }
