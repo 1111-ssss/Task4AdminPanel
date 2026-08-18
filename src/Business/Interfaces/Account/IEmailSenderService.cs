@@ -1,8 +1,8 @@
-using Business.Common.Result;
-
 namespace Business.Interfaces.Account;
 
 public interface IEmailSenderService
 {
-    Task<Result> SendConfirmationEmail(string email, string link);
+    Task SendConfirmationEmail(string email, string link, string token);
+    string GenerateEmailConfirmationToken();
+    DateTime GetEmailConfirmationExpiration();
 }

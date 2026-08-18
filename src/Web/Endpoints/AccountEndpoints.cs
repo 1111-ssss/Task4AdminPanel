@@ -25,18 +25,14 @@ public static class AccountEndpoints
 
     private static async Task<IResult> Register(
         [FromServices] IAccountRegisterService accountRegisterService,
-        [FromServices] IEmailSenderService emailSenderService,
         RegisterUserRequest request,
         HttpRequest httpRequest,
         CancellationToken cancellationToken
     )
     {
-        var result = await accountRegisterService.Register(request);
+        Func<string> getLink = () => GetConfirmationLink(httpRequest);
 
-        if (result.IsSuccess)
-        {
-            await emailSenderService.SendConfirmationEmail(result.Value.Email, GetConfirmationLink(httpRequest));
-        }
+        var result = await accountRegisterService.Register(request, getLink);
 
         return result.ToMinimalApiResult();
     }

@@ -16,22 +16,25 @@ public class AccountRegisterService : ServiceValidation, IAccountRegisterService
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IValidator<RegisterUserRequest> _registerUserValidator;
+    private readonly IEmailSenderService _emailSenderService;
     private readonly ILogger<AccountRegisterService> _logger;
 
     public AccountRegisterService(
         IUserRepository userRepository,
         IPasswordHasher passwordHasher,
         IValidator<RegisterUserRequest> registerUserValidator,
+        IEmailSenderService emailSenderService,
         ILogger<AccountRegisterService> logger
     )
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
         _registerUserValidator = registerUserValidator;
+        _emailSenderService = emailSenderService;
         _logger = logger;
     }
     
-    public async Task<Result<UserResponse>> Register(RegisterUserRequest request)
+    public async Task<Result<UserResponse>> Register(RegisterUserRequest request, Func<string> getLink)
     {
         var validationResult = await Validate(_registerUserValidator, request);
         if (!validationResult.IsSuccess)
@@ -47,6 +50,9 @@ public class AccountRegisterService : ServiceValidation, IAccountRegisterService
 
         var passwordHash = _passwordHasher.HashPassword(request.Password);
 
+        var token = _emailSenderService.GenerateEmailConfirmationToken();
+        var tokenExpiration = _emailSenderService.GetEmailConfirmationExpiration();
+
         var newUser = new ApplicationUser {
             Email = request.Email,
             Name = request.Name,
@@ -55,8 +61,8 @@ public class AccountRegisterService : ServiceValidation, IAccountRegisterService
             LastLoginTime = DateTime.UtcNow,
             Status = UserStatus.Unverified,
             PasswordHash = passwordHash,
-            EmailConfirmationToken = Guid.NewGuid().ToString(),
-            EmailConfirmationExpiration = DateTime.UtcNow.AddHours(24)
+            EmailConfirmationToken = token,
+            EmailConfirmationExpiration = tokenExpiration
         };
 
         try
@@ -71,6 +77,8 @@ public class AccountRegisterService : ServiceValidation, IAccountRegisterService
 
             return Result.Failure(Errors.DatabaseError);
         }
+
+        await _emailSenderService.SendConfirmationEmail(newUser.Email, getLink(), token);
 
         return Result<UserResponse>.Success(
             new UserResponse(

@@ -49,7 +49,22 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
 
         if (user.Status == UserStatus.Unverified && (user.EmailConfirmationExpiration is null || user.EmailConfirmationExpiration < DateTime.UtcNow))
         {
-            await _emailSenderService.SendConfirmationEmail(user.Email, getLink());
+            var generatedToken = _emailSenderService.GenerateEmailConfirmationToken();
+            await _emailSenderService.SendConfirmationEmail(user.Email, getLink(), generatedToken);
+            
+            try
+            {
+                user.EmailConfirmationToken = generatedToken;
+                user.EmailConfirmationExpiration = _emailSenderService.GetEmailConfirmationExpiration();
+
+                _userRepository.Update(user);
+
+                await _userRepository.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while sending confirmation email");
+            }
         }
 
         if (user.Status == UserStatus.Blocked)
