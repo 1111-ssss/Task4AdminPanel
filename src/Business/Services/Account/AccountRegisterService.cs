@@ -8,6 +8,7 @@ using Business.Common.Errors;
 using FluentValidation;
 using Data.Entities;
 using Data.Enums;
+using Data.Database.Exceptions;
 
 namespace Business.Services.Account;
 
@@ -42,12 +43,6 @@ public class AccountRegisterService : ServiceValidation, IAccountRegisterService
             return validationResult;
         }
 
-        var user = await _userRepository.GetByEmail(request.Email, cancellationToken);
-        if (user is not null)
-        {
-            return Result.Failure(Errors.EmailAlreadyExists);
-        }
-
         var passwordHash = _passwordHasher.HashPassword(request.Password);
 
         var token = _emailSenderService.GenerateEmailConfirmationToken();
@@ -67,9 +62,11 @@ public class AccountRegisterService : ServiceValidation, IAccountRegisterService
 
         try
         {
-            _userRepository.Add(newUser);
-
-            await _userRepository.SaveChanges(cancellationToken);
+            await _userRepository.AddUser(newUser, cancellationToken);
+        }
+        catch (DuplicateEmailException)
+        {
+            return Result.Failure(Errors.EmailAlreadyExists);
         }
         catch (Exception ex)
         {

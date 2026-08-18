@@ -29,7 +29,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity>
 
     public void Add(TEntity entity)
     {
-        _dbSet.AddAsync(entity);
+        _dbSet.Add(entity);
     }
 
     public void Update(TEntity entity)
