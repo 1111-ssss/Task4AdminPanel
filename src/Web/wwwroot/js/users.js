@@ -40,6 +40,7 @@ $(function () {
     $('#btnBlock').on('click', () => bulkAction('block'));
     $('#btnUnblock').on('click', () => bulkAction('unblock'));
     $('#btnDelete').on('click', () => bulkAction('delete'));
+    $('#btnDeleteUnverified').on('click', () => bulkAction('delete-unverified'));
 
     $('#logoutBtn').on('click', function () {
         clearError();
@@ -109,8 +110,8 @@ $(function () {
             const fullName = [user.name, user.surname].filter(Boolean).join(' ') || email;
             const lastSeen = user.lastLoginTime;
 
-            const rawStatus = user?.status !== undefined && user?.status !== null 
-                ? user.status.toString().toLowerCase() 
+            const rawStatus = user?.status !== undefined && user?.status !== null
+                ? user.status.toString().toLowerCase()
                 : '0';
 
             const statusMap = {
@@ -168,6 +169,8 @@ $(function () {
             const checked = $body.find('.row-check:checked').length;
             $('#selectAll').prop('checked', total > 0 && checked === total);
         });
+
+        initTooltips();
     }
 
     function renderPagination(total, totalPages) {
@@ -215,6 +218,19 @@ $(function () {
     function updateActionButtons() {
         const hasSelection = state.selected.size > 0;
         $('#btnBlock, #btnUnblock, #btnDelete').prop('disabled', !hasSelection);
+
+        let hasUnverifiedSelected = false;
+
+        $('#usersBody input.row-check:checked').each(function () {
+            const $row = $(this).closest('tr');
+            const statusText = $row.find('.status-badge').text().trim().toLowerCase();
+            if (statusText === 'unverified') {
+                hasUnverifiedSelected = true;
+                return false;
+            }
+        });
+
+        $('#btnDeleteUnverified').prop('disabled', !hasUnverifiedSelected);
     }
 
     function updateSortIcons() {
@@ -225,12 +241,24 @@ $(function () {
 
     async function bulkAction(action) {
         clearError();
-        const emails = Array.from(state.selected);
-        if (!emails.length) return;
 
-        $('#btnBlock, #btnUnblock, #btnDelete').prop('disabled', true);
+        let targetEmails = Array.from(state.selected);
 
-        const requests = emails.map(email => {
+        if (action === 'delete-unverified') {
+            targetEmails = targetEmails.filter(email => {
+                const $row = $(`#usersBody tr[data-email="${escapeHtml(email)}"]`);
+                const statusText = $row.find('.status-badge').text().trim().toLowerCase();
+                return statusText === 'unverified';
+            });
+
+            if (!targetEmails.length) return;
+        }
+
+        if (!targetEmails.length) return;
+
+        $('#btnBlock, #btnUnblock, #btnDelete, #btnDeleteUnverified').prop('disabled', true);
+
+        const requests = targetEmails.map(email => {
             let url, type;
             if (action === 'block') {
                 url = `/api/admin/users/${encodeURIComponent(email)}/block`;
@@ -310,6 +338,24 @@ $(function () {
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;');
     }
+
+    function initTooltips() {
+        $('[data-bs-toggle="tooltip"]').each(function () {
+            const tooltip = bootstrap.Tooltip.getInstance(this);
+            if (tooltip) {
+                tooltip.dispose();
+            }
+        });
+
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+                trigger: 'hover'
+            });
+        });
+    }
+
+    initTooltips();
 
     updateSortIcons();
 });
