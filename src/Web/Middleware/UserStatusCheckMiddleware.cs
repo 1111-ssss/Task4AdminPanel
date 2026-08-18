@@ -24,7 +24,7 @@ public class UserStatusCheckMiddleware
             {
                 var userStatus = await userRepository.GetUserStatusByEmail(userIdClaim);
 
-                if (userStatus == UserStatus.Blocked)
+                if (userStatus == UserStatus.Blocked || userStatus is null)
                 {
                     await context.SignOutAsync();
 
