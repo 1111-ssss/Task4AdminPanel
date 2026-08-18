@@ -47,6 +47,16 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
             return Result.Failure(Errors.InvalidCredentials);
         }
 
+        if (user.Status == UserStatus.Blocked)
+        {
+            return Result.Failure(Errors.UserBlocked);
+        }
+
+        if (!_passwordHasher.VerifyPassword(request.Password, user.PasswordHash))
+        {
+            return Result.Failure(Errors.InvalidCredentials);
+        }
+
         if (user.Status == UserStatus.Unverified && (user.EmailConfirmationExpiration is null || user.EmailConfirmationExpiration < DateTime.UtcNow))
         {
             var generatedToken = _emailSenderService.GenerateEmailConfirmationToken();
@@ -58,23 +68,11 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
                 user.EmailConfirmationExpiration = _emailSenderService.GetEmailConfirmationExpiration();
 
                 _userRepository.Update(user);
-
-                await _userRepository.SaveChanges(cancellationToken);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while sending confirmation email");
+                _logger.LogError(ex, "Error while updating user email confirmation token");
             }
-        }
-
-        if (user.Status == UserStatus.Blocked)
-        {
-            return Result.Failure(Errors.UserBlocked);
-        }
-
-        if (!_passwordHasher.VerifyPassword(request.Password, user.PasswordHash))
-        {
-            return Result.Failure(Errors.InvalidCredentials);
         }
 
         try
