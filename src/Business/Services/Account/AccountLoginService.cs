@@ -15,6 +15,7 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IEmailSenderService _emailSenderService;
+    private readonly IEmailQueue _emailQueue;
     private readonly IValidator<LoginUserRequest> _loginUserValidator;
     private readonly ILogger<AccountLoginService> _logger;
 
@@ -22,6 +23,7 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
         IUserRepository userRepository,
         IPasswordHasher passwordHasher,
         IEmailSenderService emailSenderService,
+        IEmailQueue emailQueue,
         IValidator<LoginUserRequest> loginUserValidator,
         ILogger<AccountLoginService> logger
     )
@@ -29,6 +31,7 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
         _emailSenderService = emailSenderService;
+        _emailQueue = emailQueue;
         _loginUserValidator = loginUserValidator;
         _logger = logger;
     }
@@ -60,7 +63,12 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
         if (user.Status == UserStatus.Unverified && (user.EmailConfirmationExpiration is null || user.EmailConfirmationExpiration < DateTime.UtcNow))
         {
             var generatedToken = _emailSenderService.GenerateEmailConfirmationToken();
-            await _emailSenderService.SendConfirmationEmail(user.Email, getLink(), generatedToken, cancellationToken);
+            var confirmationLink = getLink();
+
+            await _emailQueue.QueueEmailAsync(
+                new EmailMessage(user.Email, confirmationLink, generatedToken), 
+                cancellationToken
+            );
             
             try
             {

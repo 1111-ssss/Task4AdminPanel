@@ -1,5 +1,3 @@
-using System.Net;
-using System.Net.Mail;
 using Business;
 using Business.Interfaces.Account;
 using Business.Interfaces.Admin;
@@ -9,6 +7,7 @@ using Data.Interfaces.Services;
 using Data.Services;
 using FluentEmail.MailKitSmtp;
 using FluentValidation;
+using Web.BackgroundServices;
 using Web.Interfaces;
 using Web.Services;
 
@@ -30,6 +29,7 @@ public static class ServiceConfigurationExtension
         services.AddScoped<IListUsersService, ListUsersService>();
         services.AddScoped<IDeleteUserService, DeleteUserService>();
         services.AddScoped<IBlockUserService, BlockUserService>();
+        services.AddSingleton<IEmailQueue, EmailQueue>();
 
         // Data Services
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
@@ -37,6 +37,9 @@ public static class ServiceConfigurationExtension
 
         // Web Services
         services.AddScoped<IAuthCookieService, AuthCookieService>();
+
+        // Background Services
+        services.AddHostedService<EmailBackgroundWorker>();
 
         // Validators
         services.AddValidatorsFromAssembly(typeof(AssemblyMarker).Assembly);

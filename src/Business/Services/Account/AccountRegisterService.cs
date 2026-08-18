@@ -18,6 +18,7 @@ public class AccountRegisterService : ServiceValidation, IAccountRegisterService
     private readonly IPasswordHasher _passwordHasher;
     private readonly IValidator<RegisterUserRequest> _registerUserValidator;
     private readonly IEmailSenderService _emailSenderService;
+    private readonly IEmailQueue _emailQueue;
     private readonly ILogger<AccountRegisterService> _logger;
 
     public AccountRegisterService(
@@ -25,6 +26,7 @@ public class AccountRegisterService : ServiceValidation, IAccountRegisterService
         IPasswordHasher passwordHasher,
         IValidator<RegisterUserRequest> registerUserValidator,
         IEmailSenderService emailSenderService,
+        IEmailQueue emailQueue,
         ILogger<AccountRegisterService> logger
     )
     {
@@ -32,6 +34,7 @@ public class AccountRegisterService : ServiceValidation, IAccountRegisterService
         _passwordHasher = passwordHasher;
         _registerUserValidator = registerUserValidator;
         _emailSenderService = emailSenderService;
+        _emailQueue = emailQueue;
         _logger = logger;
     }
     
@@ -75,7 +78,12 @@ public class AccountRegisterService : ServiceValidation, IAccountRegisterService
             return Result.Failure(Errors.DatabaseError);
         }
 
-        await _emailSenderService.SendConfirmationEmail(newUser.Email, getLink(), token, cancellationToken);
+        var confirmationLink = getLink();
+
+        await _emailQueue.QueueEmailAsync(
+            new EmailMessage(newUser.Email, confirmationLink, token), 
+            cancellationToken
+        );
 
         return Result<UserResponse>.Success(
             new UserResponse(
