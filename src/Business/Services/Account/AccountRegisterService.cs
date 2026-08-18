@@ -33,16 +33,16 @@ public class AccountRegisterService : ServiceValidation, IAccountRegisterService
     
     public async Task<Result<UserResponse>> Register(RegisterUserRequest request)
     {
-        var user = await _userRepository.GetByEmail(request.Email);
-        if (user is not null)
-        {
-            return Result.Failure(Errors.EmailAlreadyExists);
-        }
-
         var validationResult = await Validate(_registerUserValidator, request);
         if (!validationResult.IsSuccess)
         {
             return validationResult;
+        }
+
+        var user = await _userRepository.GetByEmail(request.Email);
+        if (user is not null)
+        {
+            return Result.Failure(Errors.EmailAlreadyExists);
         }
 
         var passwordHash = _passwordHasher.HashPassword(request.Password);

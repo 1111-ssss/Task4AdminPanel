@@ -28,16 +28,16 @@ public class ConfirmEmailService : ServiceValidation, IConfirmEmailService
 
     public async Task<Result<UserResponse>> ConfirmEmail(ConfirmEmailRequest request)
     {
-        var user = await _userRepository.GetByEmailConfirmationToken(request.Token);
-        if (user is null)
-        {
-            return Result.Failure(Errors.InvalidEmailToken);
-        }
-
         var validationResult = await Validate(_confirmEmailValidator, request);
         if (!validationResult.IsSuccess)
         {
             return validationResult;
+        }
+
+        var user = await _userRepository.GetByEmailConfirmationToken(request.Token);
+        if (user is null)
+        {
+            return Result.Failure(Errors.InvalidEmailToken);
         }
 
         if (user.Status != UserStatus.Unverified)

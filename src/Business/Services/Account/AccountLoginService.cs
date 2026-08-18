@@ -35,6 +35,12 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
 
     public async Task<Result<UserResponse>> Login(LoginUserRequest request, Func<string> getLink)
     {
+        var validationResult = await Validate(_loginUserValidator, request);
+        if (!validationResult.IsSuccess)
+        {
+            return validationResult;
+        }
+
         var user = await _userRepository.GetByEmail(request.Email);
         if (user is null)
         {
@@ -49,12 +55,6 @@ public class AccountLoginService : ServiceValidation, IAccountLoginService
         if (user.Status == UserStatus.Blocked)
         {
             return Result.Failure(Errors.UserBlocked);
-        }
-
-        var validationResult = await Validate(_loginUserValidator, request);
-        if (!validationResult.IsSuccess)
-        {
-            return validationResult;
         }
 
         if (!_passwordHasher.VerifyPassword(request.Password, user.PasswordHash))
