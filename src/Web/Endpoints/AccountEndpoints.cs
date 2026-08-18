@@ -18,7 +18,7 @@ public static class AccountEndpoints
 
         group.MapPost("/logout", Logout);
         
-        group.MapGet("/confirm-email", ConfirmEmail);
+        group.MapPost("/confirm-email", ConfirmEmail);
         
         return group;
     }
