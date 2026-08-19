@@ -1,0 +1,111 @@
+using Business.Common.Result;
+using Business.Common.Errors;
+using Business.Contracts.Account;
+using Business.Interfaces.Account;
+using Data.Enums;
+using Data.Interfaces.Repositories;
+using Data.Interfaces.Services;
+using FluentValidation;
+using Microsoft.Extensions.Logging;
+
+namespace Business.Services.Account;
+
+public class AccountLoginService : ServiceValidation, IAccountLoginService
+{
+    private readonly IUserRepository _userRepository;
+    private readonly IPasswordHasher _passwordHasher;
+    private readonly IEmailSenderService _emailSenderService;
+    private readonly IEmailQueue _emailQueue;
+    private readonly IValidator<LoginUserRequest> _loginUserValidator;
+    private readonly ILogger<AccountLoginService> _logger;
+
+    public AccountLoginService(
+        IUserRepository userRepository,
+        IPasswordHasher passwordHasher,
+        IEmailSenderService emailSenderService,
+        IEmailQueue emailQueue,
+        IValidator<LoginUserRequest> loginUserValidator,
+        ILogger<AccountLoginService> logger
+    )
+    {
+        _userRepository = userRepository;
+        _passwordHasher = passwordHasher;
+        _emailSenderService = emailSenderService;
+        _emailQueue = emailQueue;
+        _loginUserValidator = loginUserValidator;
+        _logger = logger;
+    }
+
+    public async Task<Result<UserResponse>> Login(LoginUserRequest request, Func<string> getLink, CancellationToken cancellationToken)
+    {
+        var validationResult = await Validate(_loginUserValidator, request, cancellationToken);
+        if (!validationResult.IsSuccess)
+        {
+            return validationResult;
+        }
+
+        var user = await _userRepository.GetByEmail(request.Email, cancellationToken);
+        if (user is null)
+        {
+            return Result.Failure(Errors.InvalidCredentials);
+        }
+
+        if (user.Status == UserStatus.Blocked)
+        {
+            return Result.Failure(Errors.UserBlocked);
+        }
+
+        if (!_passwordHasher.VerifyPassword(request.Password, user.PasswordHash))
+        {
+            return Result.Failure(Errors.InvalidCredentials);
+        }
+
+        if (user.Status == UserStatus.Unverified && (user.EmailConfirmationExpiration is null || user.EmailConfirmationExpiration < DateTime.UtcNow))
+        {
+            var generatedToken = _emailSenderService.GenerateEmailConfirmationToken();
+            var confirmationLink = getLink();
+
+            await _emailQueue.QueueEmailAsync(
+                new EmailMessage(user.Email, confirmationLink, generatedToken), 
+                cancellationToken
+            );
+            
+            try
+            {
+                user.EmailConfirmationToken = generatedToken;
+                user.EmailConfirmationExpiration = _emailSenderService.GetEmailConfirmationExpiration();
+
+                _userRepository.Update(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while updating user email confirmation token");
+            }
+        }
+
+        try
+        {
+            user.LastLoginTime = DateTime.UtcNow;
+            _userRepository.Update(user);
+
+            await _userRepository.SaveChanges(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while updating user last login time");
+
+            return Result.Failure(Errors.DatabaseError);
+        }
+
+        return Result<UserResponse>.Success(
+            new UserResponse(
+                Name: user.Name,
+                Surname: user.Surname,
+                Email: user.Email,
+                RegistrationTime: user.RegistrationTime,
+                LastLoginTime: user.LastLoginTime,
+                Status: user.Status
+            )
+        );
+    }
+}

@@ -1,0 +1,89 @@
+@page
+@model Web.Pages.Users.IndexModel
+@{
+    ViewData["Title"] = "Users";
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" href="~/css/users.css" asp-append-version="true" />
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0 fw-bold">Users</h2>
+        <button id="logoutBtn" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="Log out from system">
+            Log out
+        </button>
+    </div>
+
+    <div id="statusMessage"></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div class="btn-group" role="group">
+            <button type="button" id="btnBlock" class="btn btn-outline-primary btn-sm" disabled data-bs-toggle="tooltip" title="Block selected users">
+                <i class="bi bi-lock"></i> Block
+            </button>
+            <button type="button" id="btnUnblock" class="btn btn-outline-primary btn-sm" disabled data-bs-toggle="tooltip" title="Unblock selected users">
+                <i class="bi bi-unlock"></i>
+            </button>
+            <button type="button" id="btnDelete" class="btn btn-outline-danger btn-sm" disabled data-bs-toggle="tooltip" title="Delete selected users">
+                <i class="bi bi-trash"></i>
+            </button>
+            <button type="button" id="btnDeleteUnverified" class="btn btn-outline-warning btn-sm" disabled data-bs-toggle="tooltip" title="Delete unverified users among selected">
+                <i class="bi bi-person-x"></i>
+            </button>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <input type="text" id="searchInput" class="form-control form-control-sm" 
+                placeholder="Filter" style="width: 220px;" data-bs-toggle="tooltip" title="Search by name or email" />
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="usersTable">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 40px;">
+                            <input type="checkbox" class="form-check-input" id="selectAll" data-bs-toggle="tooltip" title="Select / Deselect all" />
+                        </th>
+                        <th class="sortable" data-order="name" data-bs-toggle="tooltip" title="Sort by Name">
+                            Name <span class="sort-icon"></span>
+                        </th>
+                        <th class="sortable" data-order="email" data-bs-toggle="tooltip" title="Sort by Email">
+                            Email <span class="sort-icon"></span>
+                        </th>
+                        <th class="sortable" data-order="status" data-bs-toggle="tooltip" title="Sort by Status">
+                            Status <span class="sort-icon"></span>
+                        </th>
+                        <th class="sortable" data-order="lastSeen" data-bs-toggle="tooltip" title="Sort by Last Login Time">
+                            Last seen <span class="sort-icon"></span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="usersBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div id="emptyState" class="text-center text-muted py-5 d-none">
+            No users found
+        </div>
+
+        <div id="loadingState" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="text-muted small" id="pageInfo"></div>
+        <nav>
+            <ul class="pagination pagination-sm mb-0" id="pagination"></ul>
+        </nav>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/users.js" asp-append-version="true"></script>
+}

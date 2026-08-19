@@ -1,0 +1,49 @@
+@page
+@model Account.LoginModel
+@{
+    ViewData["Title"] = "Sign In";
+    Layout = "_AuthLayout";
+}
+
+<h1 class="fw-bold mb-4" style="color:#0d6efd;">THE APP</h1>
+<p class="text-muted mb-1">Start your journey</p>
+<h2 class="mb-4">Sign In</h2>
+
+<div id="registeredSuccess" class="alert alert-success mb-3" style="display: none;">
+    Registration successful! Please check your email to verify your account.
+</div>
+
+<div id="accountBlocked" class="alert alert-danger mb-3" style="display: none;">
+    Your account has been blocked.
+</div>
+
+<form id="loginForm" method="post" class="w-100" style="max-width: 400px;">
+    <div class="mb-3">
+        <label asp-for="Input.Email" class="form-label"></label>
+        <input asp-for="Input.Email" class="form-control" placeholder="example@email.com" />
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Input.Password" class="form-label"></label>
+        <input asp-for="Input.Password" class="form-control" />
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
+    </div>
+    <div class="form-check mb-3">
+        <input asp-for="Input.RememberMe" class="form-check-input" />
+        <label asp-for="Input.RememberMe" class="form-check-label"></label>
+    </div>
+    <button type="submit" class="btn btn-primary w-100 py-2" id="loginBtn">
+        <span id="btnText">Sign in</span>
+        <span id="btnSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+    </button>
+</form>
+
+<div class="d-flex justify-content-between w-100 mt-4" style="max-width: 400px;">
+    <a href="/Account/Register">Don't have an account? Sign up</a>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/auth-form.js" asp-append-version="true"></script>
+    <script src="~/js/login.js"></script>
+}

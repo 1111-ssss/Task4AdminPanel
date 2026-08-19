@@ -5,8 +5,8 @@ namespace Web.Pages;
 
 public class IndexModel : PageModel
 {
-    public void OnGet()
+    public IActionResult OnGet()
     {
-
+        return RedirectToPage("/Users/Index");
     }
 }
