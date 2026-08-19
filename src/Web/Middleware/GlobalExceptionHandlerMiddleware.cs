@@ -27,8 +27,8 @@ public class GlobalExceptionHandlerMiddleware
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
             await context.Response.WriteAsJsonAsync(new
             {
-                code = "BadRequest",
-                message = ex.Message
+                errorCode = "BadRequest",
+                error = ex.Message
             });
         }
         catch (Exception ex)
@@ -38,8 +38,8 @@ public class GlobalExceptionHandlerMiddleware
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             await context.Response.WriteAsJsonAsync(new
             {
-                code = "InternalServerError",
-                messgae = "Internal server error"
+                errorCode = "InternalServerError",
+                error = "Internal server error"
             });
         }
     }

@@ -13,7 +13,7 @@ public static class AuthConfigurationExtension
                 options.AccessDeniedPath = "/Account/Login";
                 options.ExpireTimeSpan = TimeSpan.FromDays(7);
                 options.SlidingExpiration = true;
-                
+
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
             });
