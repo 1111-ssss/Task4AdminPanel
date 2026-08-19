@@ -24,12 +24,22 @@ public class UserStatusCheckMiddleware
             {
                 var userStatus = await userRepository.GetUserStatusByEmail(userIdClaim);
 
-                if (userStatus == UserStatus.Blocked || userStatus is null)
+                if (userStatus == UserStatus.Blocked)
                 {
                     await context.SignOutAsync();
 
-                    context.Response.Redirect("/login?blocked=1");
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        errorCode = "USER_BLOCKED",
+                        error = "User is blocked"
+                    });
+
                     return; 
+                }
+                else if (userStatus is null)
+                {
+                    await context.SignOutAsync();
                 }
             }
         }

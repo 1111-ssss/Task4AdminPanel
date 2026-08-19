@@ -78,6 +78,18 @@ $(function () {
                 updateActionButtons();
             },
             error: function (xhr) {
+                if (xhr.status === 401) {
+                    if (xhr.responseJSON && xhr.responseJSON.errorCode === 'USER_BLOCKED') {
+                        window.location.href = '/Account/Login?blocked=1';
+                        return;
+                    }
+                    else {
+                        window.location.href = '/Account/Login';
+                        return;
+                    }
+                    return;
+                }
+
                 let message = 'Failed to load users. Please try again later.';
                 if (xhr.responseJSON && xhr.responseJSON.error) {
                     message = xhr.responseJSON.error;
